@@ -1,0 +1,6 @@
+{
+  "name": "Nuqta POS",
+  "description": "Modern Point-of-Sale and Retail Management System for Moroccan and international businesses.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
