@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { Language } from './types';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -110,6 +111,8 @@ export default function App() {
       {/* Shared Footer block component */}
       {currentPage !== 'admin' && <Footer lang={lang} onPageChange={handlePageChange} />}
 
+      {/* Vercel Speed Insights */}
+      <SpeedInsights />
     </div>
   );
 }
