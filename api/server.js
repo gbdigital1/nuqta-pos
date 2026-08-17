@@ -32,18 +32,13 @@ let leadsCollection;
 let usersCollection;
 
 async function connectDB() {
-    try {
-        await client.connect();
-        const db = client.db('nuqta_pos');
-        leadsCollection = db.collection('leads');
-        usersCollection = db.collection('users');
-        await leadsCollection.createIndex({ createdAt: -1 });
-        await usersCollection.createIndex({ email: 1 }, { unique: true });
-        console.log('✅ Connected to MongoDB Atlas');
-    } catch (err) {
-        console.error('❌ MongoDB connection failed:', err);
-        process.exit(1);
-    }
+    await client.connect();
+    const db = client.db('nuqta_pos');
+    leadsCollection = db.collection('leads');
+    usersCollection = db.collection('users');
+    await leadsCollection.createIndex({ createdAt: -1 });
+    await usersCollection.createIndex({ email: 1 }, { unique: true });
+    console.log('✅ Connected to MongoDB Atlas');
 }
 
 // ─── Auth middleware (JWT) ─────────────────────────────────────
@@ -293,8 +288,36 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-connectDB().then(() => {
-    app.listen(PORT, () => {
-        console.log(`🚀 Nuqta API running on port ${PORT}`);
-    });
+// ─── Serverless-safe DB connection ─────────────────────────────
+let dbConnection = null;
+function ensureDB() {
+    if (!dbConnection) {
+        dbConnection = connectDB().catch(err => {
+            dbConnection = null; // allow retry on next request
+            throw err;
+        });
+    }
+    return dbConnection;
+}
+
+app.use(async (req, res, next) => {
+    try {
+        await ensureDB();
+        next();
+    } catch (err) {
+        console.error('DB connection error:', err);
+        res.status(500).json({ error: 'Database unavailable' });
+    }
 });
+
+module.exports = app;
+
+// Only start a real listening server when run locally (node api/index.js)
+// On Vercel, the platform calls the exported app directly per-request.
+if (require.main === module) {
+    connectDB().then(() => {
+        app.listen(PORT, () => {
+            console.log(`🚀 Nuqta API running on port ${PORT}`);
+        });
+    });
+}
