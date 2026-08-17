@@ -41,6 +41,28 @@ async function connectDB() {
     console.log('✅ Connected to MongoDB Atlas');
 }
 
+// ─── Serverless-safe DB connection (MUST run before routes) ────
+let dbConnection = null;
+function ensureDB() {
+    if (!dbConnection) {
+        dbConnection = connectDB().catch(err => {
+            dbConnection = null; // allow retry on next request
+            throw err;
+        });
+    }
+    return dbConnection;
+}
+
+app.use(async (req, res, next) => {
+    try {
+        await ensureDB();
+        next();
+    } catch (err) {
+        console.error('DB connection error:', err);
+        res.status(500).json({ error: 'Database unavailable' });
+    }
+});
+
 // ─── Auth middleware (JWT) ─────────────────────────────────────
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
@@ -286,28 +308,6 @@ app.delete('/api/users/:id', authenticateToken, requireRole('super_admin'), asyn
 
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
-
-// ─── Serverless-safe DB connection ─────────────────────────────
-let dbConnection = null;
-function ensureDB() {
-    if (!dbConnection) {
-        dbConnection = connectDB().catch(err => {
-            dbConnection = null; // allow retry on next request
-            throw err;
-        });
-    }
-    return dbConnection;
-}
-
-app.use(async (req, res, next) => {
-    try {
-        await ensureDB();
-        next();
-    } catch (err) {
-        console.error('DB connection error:', err);
-        res.status(500).json({ error: 'Database unavailable' });
-    }
 });
 
 module.exports = app;
