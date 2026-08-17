@@ -181,11 +181,12 @@ export default function Admin({ lang, onPageChange }: AdminProps) {
   const [showPassword, setShowPassword] = useState(false);
 
   // Active Tab/Page: 'list' | 'analytics' | 'simulator' | 'settings'
-  const [activeTab, setActiveTab] = useState<'list' | 'analytics' | 'simulator' | 'settings' | 'users'>('list');
+  const [activeTab, setActiveTab] = useState<'list' | 'analytics' | 'simulator' | 'settings' | 'users'>('analytics');
   const [isSidebarOpenMobile, setIsSidebarOpenMobile] = useState(false);
 
   // Leads & Core State
   const [leads, setLeads] = useState<Lead[]>([]);
+  const [leadsError, setLeadsError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [regionFilter, setRegionFilter] = useState('all');
@@ -233,6 +234,7 @@ export default function Admin({ lang, onPageChange }: AdminProps) {
     password: ''
   });
 
+
   const authFetch = (url: string, options: RequestInit = {}) => {
     const token = sessionStorage.getItem('nuqta_admin_token');
     return fetch(url, {
@@ -257,10 +259,21 @@ export default function Admin({ lang, onPageChange }: AdminProps) {
             id: l.id || l._id?.toString()
           }));
           setLeads(normalized);
+          setLeadsError(null);
+        } else {
+          setLeadsError(
+            lang === 'en'
+              ? 'Failed to load leads from the server.'
+              : 'Échec du chargement des prospects.'
+          );
         }
       } catch (err) {
         console.error('Failed to fetch leads:', err);
-        setLeads(INITIAL_MOCK_LEADS);
+        setLeadsError(
+          lang === 'en'
+            ? 'Could not connect to the server. Check your connection or try again.'
+            : 'Connexion au serveur impossible. Vérifiez votre connexion.'
+        );
       }
     };
     fetchLeads();
@@ -947,7 +960,7 @@ export default function Admin({ lang, onPageChange }: AdminProps) {
 
       {/* Floating System Toast */}
       {toast && (
-        <div className="fixed top-6 right-6 z-50 animate-fade-in flex items-center gap-2 bg-white border border-slate-200 px-4 py-3.5 rounded-2xl shadow-xl max-w-sm">
+        <div className="fixed top-6 right-6 z-[70] animate-fade-in flex items-center gap-2 bg-white border border-slate-200 px-4 py-3.5 rounded-2xl shadow-xl max-w-sm">
           <div className={`w-2.5 h-2.5 rounded-full ${toast.type === 'success' ? 'bg-emerald-500' : 'bg-blue-500'}`} />
           <p className="text-xs font-bold text-slate-800">{toast.message}</p>
         </div>
@@ -1026,6 +1039,26 @@ export default function Admin({ lang, onPageChange }: AdminProps) {
                   {lang === 'en' ? 'Navigation' : 'Menu Principal'}
                 </div>
 
+                {/* Tab: Analytics */}
+                <button
+                  onClick={() => {
+                    setActiveTab('analytics');
+                    setIsSidebarOpenMobile(false);
+                  }}
+                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${activeTab === 'analytics'
+                    ? 'bg-blue-50 text-[#006AFF]'
+                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                    }`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <BarChart3 className="w-4 h-4 shrink-0" />
+                    <span>{lang === 'en' ? 'Insights & Analytics' : 'Analyses & Graphes'}</span>
+                  </div>
+                  <span className="text-[9px] font-extrabold bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded uppercase tracking-wider scale-90">
+                    Live
+                  </span>
+                </button>
+
                 {/* Tab: Inquiries List */}
                 <button
                   onClick={() => {
@@ -1048,25 +1081,7 @@ export default function Admin({ lang, onPageChange }: AdminProps) {
                   )}
                 </button>
 
-                {/* Tab: Analytics */}
-                <button
-                  onClick={() => {
-                    setActiveTab('analytics');
-                    setIsSidebarOpenMobile(false);
-                  }}
-                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${activeTab === 'analytics'
-                    ? 'bg-blue-50 text-[#006AFF]'
-                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                    }`}
-                >
-                  <div className="flex items-center gap-2.5">
-                    <BarChart3 className="w-4 h-4 shrink-0" />
-                    <span>{lang === 'en' ? 'Insights & Analytics' : 'Analyses & Graphes'}</span>
-                  </div>
-                  <span className="text-[9px] font-extrabold bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded uppercase tracking-wider scale-90">
-                    Live
-                  </span>
-                </button>
+
 
                 {/* Tab: Simulator */}
                 <button
@@ -1210,6 +1225,13 @@ export default function Admin({ lang, onPageChange }: AdminProps) {
               animate={{ opacity: 1, y: 0 }}
               className="space-y-6"
             >
+              {leadsError && (
+                <div className="p-4 bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold rounded-2xl flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>{leadsError}</span>
+                </div>
+              )}
+
               {/* Simple, visual minimalist metrics bar */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">

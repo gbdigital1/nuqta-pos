@@ -41,7 +41,7 @@ export default function App() {
 
   // Sync route on page load / back-forward navigation based on the real URL path
   useEffect(() => {
-    const validPages = ['home', 'features', 'pricing', 'business', 'contact', 'admin'];
+    const validPages = ['home', 'features', 'pricing', 'business', 'contact', 'admin', 'legal', 'terms', 'privacy'];
 
     const handleLocation = () => {
       const path = window.location.pathname.replace(/^\//, '').replace(/\/$/, '');

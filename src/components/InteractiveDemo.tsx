@@ -31,7 +31,7 @@ export default function InteractiveDemo({ lang, onPageChange }: InteractiveDemoP
   // ==========================================
   // Tab 1: POS / CAISSE STATE & LOGIC
   // ==========================================
-  const [businessType, setBusinessType] = useState<'bakery' | 'pc_store'>('pc_store');
+  const [businessType, setBusinessType] = useState<'bakery' | 'pc_store'>('bakery');
 
   const bakeryProducts = [
     {

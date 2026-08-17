@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
 const rateLimit = require('express-rate-limit');
 
 const app = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3001;
 
 // ─── Middleware ───────────────────────────────────────────────
@@ -118,9 +119,18 @@ app.get('/api/me', authenticateToken, (req, res) => {
     res.json({ user: req.user });
 });
 
+
+const leadsLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 20, // 20 submissions per IP per 15 min — generous for real users, blocks spam bots
+    message: { error: 'Too many submissions. Please try again later.' },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
 // ─── Lead Routes ─────────────────────────────────────────────
 
-app.post('/api/leads', async (req, res) => {
+app.post('/api/leads', leadsLimiter, async (req, res) => {
     try {
         const lead = { ...req.body, createdAt: new Date().toISOString(), status: 'new' };
         if (!lead.name || !lead.email || !lead.phone) {

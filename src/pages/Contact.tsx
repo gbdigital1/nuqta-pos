@@ -131,7 +131,11 @@ export default function Contact({ lang }: ContactProps) {
       <section className="text-center max-w-2xl mx-auto px-4 sm:px-6 space-y-4">
         <div className="inline-flex items-center gap-1 bg-blue-100 text-blue-700 px-3.5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">
           <Sparkles className="w-3.5 h-3.5" />
-          Onboard with Nuqta Sales Engineers
+          {lang === 'en'
+            ? 'Onboard with Nuqta Sales Engineers'
+            : lang === 'fr'
+              ? 'Intégration avec nos ingénieurs commerciaux'
+              : 'التفعيل بمرافقة مهندسي المبيعات لدينا'}
         </div>
         <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-[var(--text-primary)]">
           {t.contactTitle}
@@ -362,7 +366,7 @@ export default function Contact({ lang }: ContactProps) {
                       {lang === 'en' ? 'WhatsApp hotline' : lang === 'fr' ? 'Ligne WhatsApp' : 'رقم الواتساب المباشر'}
                     </span>
                     <span className="text-[var(--text-primary)] font-mono">
-                      +212 522-493021 {lang === 'en' ? '(Casablanca office)' : lang === 'fr' ? '(Bureau de Casablanca)' : '(مكتب الدار البيضاء)'}
+                      +212 522-493021 {lang === 'en' ? '(Meknes office)' : lang === 'fr' ? '(Bureau de Meknes)' : '(مكتب مكناس)'}
                     </span>
                   </div>
                 </div>
@@ -387,24 +391,51 @@ export default function Contact({ lang }: ContactProps) {
             </div>
 
             {/* SLA guarantees card */}
-            <div className="bg-gray-100 p-6 rounded-2xl border border-[var(--border)] space-y-4">
-              <div className="flex items-center gap-2">
-                <Clock className="w-4.5 h-4.5 text-[var(--accent)] shrink-0" />
-                <h4 className="font-extrabold text-xs uppercase tracking-wider text-[var(--text-primary)]">
-                  {lang === 'en' ? 'Nuqta Onboarding SLA Guarantee' : lang === 'fr' ? "Garantie SLA d'intégration Nuqta" : 'ضمان سرعة التفعيل والدعم من نقطة'}
-                </h4>
+            <div className="bg-gray-100 p-6 rounded-2xl border border-[var(--border)] space-y-4 flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <div className="h-8 w-8 shrink-0 rounded-full bg-white border border-[var(--border)] flex items-center justify-center">
+                    <Clock className="w-4 h-4 text-[var(--accent)]" />
+                  </div>
+                  <h4 className="font-extrabold text-xs uppercase tracking-wider text-[var(--text-primary)]">
+                    {lang === 'en' ? 'Onboarding & Support SLA' : lang === 'fr' ? "SLA d'intégration & support" : 'ضمان سرعة التفعيل والدعم'}
+                  </h4>
+                </div>
+
+                <p className="text-xs text-[var(--text-secondary)] leading-relaxed font-semibold">
+                  {lang === 'en'
+                    ? 'We guarantee a reply in under 1 hour, every time. Site integrations, data migration from legacy tools, and on-premises CMI terminal setup are handled end-to-end by our localized experts — no back-and-forth, no guesswork.'
+                    : lang === 'fr'
+                      ? 'Nous garantissons une réponse en moins d\'une heure, à chaque fois. Intégrations sur site, migration des données depuis vos anciens outils et configuration des terminaux CMI sont prises en charge de bout en bout par nos experts locaux.'
+                      : 'نضمن لك الرد في أقل من ساعة واحدة، في كل مرة. يتولى خبراؤنا المحليون الربط في الموقع، وترحيل البيانات من الأنظمة القديمة، وتثبيت أجهزة الدفع (CMI) بشكل كامل — دون تعقيد أو انتظار.'}
+                </p>
               </div>
-              <p className="text-xs text-[var(--text-secondary)] leading-relaxed font-semibold">
-                {lang === 'en'
-                  ? 'We guarantee a reply in less than 1 hour. All site integrations, data migrations from old legacy tools, and on-premises CMI terminal setups are pre-configured by our localized experts.'
-                  : lang === 'fr'
-                    ? 'Nous garantissons une réponse en moins de 1 heure. Toutes les intégrations sur site, les migrations de données depuis vos anciens systèmes et les configurations de terminaux CMI locaux sont préconfigurées par nos experts locaux.'
-                    : 'نضمن لك الرد في أقل من ساعة واحدة. يتم إعداد وتهيئة كافة عمليات الربط في الموقع، وترحيل البيانات من الأنظمة السابقة، وتثبيت أجهزة الدفع (CMI) المحلية مسبقاً بواسطة خبرائنا المحليين.'}
-              </p>
+
+              {/* Stat strip so the card isn't just a paragraph */}
+              <div className="grid grid-cols-3 gap-2 pt-1">
+                <div className="bg-white rounded-xl border border-[var(--border)] p-2.5 text-center">
+                  <span className="block text-sm font-extrabold text-[var(--accent)] font-mono">&lt;1h</span>
+                  <span className="block text-[8px] font-bold text-[var(--text-muted)] uppercase tracking-wide mt-0.5">
+                    {lang === 'en' ? 'Reply time' : lang === 'fr' ? 'Délai réponse' : 'وقت الرد'}
+                  </span>
+                </div>
+                <div className="bg-white rounded-xl border border-[var(--border)] p-2.5 text-center">
+                  <span className="block text-sm font-extrabold text-[var(--accent)] font-mono">24/7</span>
+                  <span className="block text-[8px] font-bold text-[var(--text-muted)] uppercase tracking-wide mt-0.5">
+                    {lang === 'en' ? 'Support' : lang === 'fr' ? 'Support' : 'الدعم'}
+                  </span>
+                </div>
+                <div className="bg-white rounded-xl border border-[var(--border)] p-2.5 text-center">
+                  <span className="block text-sm font-extrabold text-[var(--accent)] font-mono">100%</span>
+                  <span className="block text-[8px] font-bold text-[var(--text-muted)] uppercase tracking-wide mt-0.5">
+                    {lang === 'en' ? 'Setup done for you' : lang === 'fr' ? 'Configuré pour vous' : 'إعداد كامل'}
+                  </span>
+                </div>
+              </div>
             </div>
 
             {/* Safety badge */}
-            <div className="p-4 bg-[var(--accent-light)] border border-[var(--accent)]/10 text-[var(--text-primary)] text-xs rounded-xl flex items-center gap-3 font-semibold">
+            {/* <div className="p-4 bg-[var(--accent-light)] border border-[var(--accent)]/10 text-[var(--text-primary)] text-xs rounded-xl flex items-center gap-3 font-semibold">
               <ShieldCheck className="w-6 h-6 text-[var(--accent)] shrink-0" />
               <span>
                 {lang === 'en'
@@ -413,7 +444,7 @@ export default function Contact({ lang }: ContactProps) {
                     ? "Certifié conforme aux spécifications de sécurité CMI pour l'intégration directe des terminaux de paiement."
                     : 'معتمد بموجب مواصفات أمان CMI للربط المباشر مع أجهزة قراءة البطاقات البنكية.'}
               </span>
-            </div>
+            </div> */}
 
           </div>
 
